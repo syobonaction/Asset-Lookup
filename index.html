@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html ng-app="myApp">
+  <head>
+    <title>Asset Lookup</title>
+    <meta content="width=device-width, initial-scale=1.0 maximum-scale=1, user-scalable=0" name="viewport">
+    <link href='https://fonts.googleapis.com/css?family=Cuprum:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="css/normalize.css"/>
+    <link rel="stylesheet" type="text/css" href="css/stylesheet.css"/>
+  </head>
+  <body ng-controller="ctrlMain">
+    <div class="container">
+      <header>
+        <h1>Asset Lookup Tool</h1>
+        <h3>- For SASHA Development</h3>
+        <ul class="nav-h">
+          <li ng-class="navTab==1 ? 'tabSel' : ''"><a href="" ng-click="navTab=1">Find Test Asset</a></li>
+          <li ng-class="navTab==2 ? 'tabSel' : ''"><a href="" ng-click="navTab=2">Add Custom Assets</a></li>
+          <li ng-class="navTab==3 ? 'tabSel' : ''"><a href="" ng-click="navTab=3">About This Tool</a></li>
+        </ul>
+      </header>
+      <div class="container-50">
+        <section id="tabSearch">
+          <section id="search" ng-controller="ctrlSearch">
+            <h3 ng-bind-html="titles[navTab-1]"></h3>
+            <section id="searchbox" ng-hide="navTab==3">
+              <ul class="nav-h">
+                <li>
+                  <select id="service" name="service" ng-options="service as service.name for service in data.services track by service.name" ng-model="data.servicesSel" ng-change="resetSearch()">
+                  </select>
+                </li>
+                <!--Service Lines-->
+                <li>
+                  <select id="serviceLine" name="serviceLine" ng-options="line for line in data.servicesSel.lines track by line" ng-model="data.serviceLineSel.line">
+                  </select>
+                </li>
+                <!--Asset Types-->
+                <li>
+                  <select id="assetType" name="assetType" ng-options="type.name for type in data.servicesSel.types track by type.name" ng-model="data.typeSel">
+                  </select>
+                </li>
+                <!--Add Options-->
+                <span id="addOpts" ng-show="navTab==2">
+                  <li>
+                    <input type="text" id="assetid" name="assetid" placeholder="Asset ID" ng-model="newAsset"/>
+                  </li>
+                  <li>
+                    <button id="submitAsset" ng-click="addAsset()">Add</button>
+                  </li>
+                </span>
+              </ul>
+            </section>
+            <p class="confirmation" ng-show="navTab==2" ng-bind-html="confMessage"></p>
+          </section>
+          <section id="results" ng-controller="ctrlResults" ng-show="navTab==1">
+            <ul>
+              <li ng-repeat="asset in assets | fltrService | fltrServiceLine | fltrType">
+                <p ng-hide="editing" ng-model="asset.id">{{asset.id}}<span class="notes" ng-hide="asset.notes=='' || removing"> | {{asset.notes}}</span>
+                  <span class="removeText" ng-show="removing">Are you sure you'd like to remove this asset?</span>
+                  <span class='buttonWrapper'>
+                    <input class='editButton' type='button' value='edit' ng-hide="removing" ng-click="editing=true"/>
+                    <input class='removeButton' type='button' value='remove' ng-hide="removing" ng-click="removing=true"/>
+                    <input class='removeButton' type='button' value='yes' ng-show="removing" ng-click="removeAsset(asset)"/>
+                    <input class='removeButton' type='button' value='no' ng-show="removing" ng-click="removing=false"/>
+                  </span>
+                </p>
+                <p ng-show="editing">
+                  <input ng-model="asset.id"/>
+                  <input ng-model="asset.notes" placeholder="Notes"/>
+                  <span class='buttonWrapper'>
+                    <input class='saveButton' type='button' value='save' ng-click="editing=false"/>
+                  </span>
+                </p>
+              </li>
+            </ul>
+          </section>
+        </section>
+        <section id="tabAbout" ng-show="navTab==3">
+          <p>This tool was written by Vincent Pauley and Charles Cole.  It was built to allow filtering of assets based on the parameters required for testing.</p>
+        </section>
+      </div><div class="container-50 right">
+        <section id="info">
+          <h3>How to use this tool</h3>
+          <h4>Finding Assets:</h4>
+          <p>Choose attributes from the three dropdowns to narrow down your search results. Results will automatically update upon selection. Notes for each asset appear on the right side of the asset if available.</p>
+          <h4>Adding Assets:</h4>
+          <p>Simply click the assets tab above and change the selections to the appropriate settings for the asset you are adding.  When you hit the add button, you should see confirmation that your new asset
+          has populated in the records.</p>
+          <h4>Editing Assets:</h4>
+          <p>You can edit live assets that diplay in the list at any time.</p>
+          <h4>Removing Assets:</h4>
+          <p>Click remove, repeat as needed</p>
+          <hr></hr>
+          <p>Special Note: this tool saves data using the HTML5 local storage object. assets that you add, edit, and delete should carry over from session to session.  If you have suggestions or problems to report,
+          contact Charles Cole or Vincent Pauley.</p>
+        </section>
+      </div>
+    </div>
+    <footer>
+
+    </footer>
+  </body>
+  <script type="text/javascript" src="js/jquery-1.11.3.min.js"></script>
+  <script type="text/javascript" src="https://code.angularjs.org/1.4.0-rc.2/angular.min.js"></script>
+  <script type="text/javascript" src="https://code.angularjs.org/1.4.0-rc.2/angular-sanitize.min.js"></script>
+  <script type="text/javascript" src="js/assets.js"></script>
+  <script type="text/javascript" src="js/app.js"></script>
+</html>
